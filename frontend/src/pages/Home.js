@@ -44,13 +44,13 @@ const Home = () => {
       {user ? ( // Check if user is logged in
         <>
           <div style={styles.container}>
-            <h1>Welcome, {user.username}</h1> // Display welcome message with username
-            <p>Email: {user.email}</p> // Display user's email
+            <h1>Welcome, {user.username}</h1>
+            <p>Email: {user.email}</p> 
           </div>
           <div style={styles.buttonContainer}>
             <button onClick={handleLogout} style={styles.button}>
               Logout
-            </button> // Logout button
+            </button> 
           </div>
         </>
       ) : (
@@ -59,7 +59,7 @@ const Home = () => {
             <div style={styles.buttonContainer}>
               <button style={styles.button}>
                 Login
-              </button> // Link to login page
+              </button> 
             </div>
           </Link>
         </>

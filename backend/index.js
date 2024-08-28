@@ -67,4 +67,62 @@ app.post("/login", async(req, res) => {
 });
 
 // Signup route
-app
+app.post("/signup", async(req, res) => {
+    try {
+        const { username, email, password } = req.body; // Extract username, email, and password from request body
+        
+        // Check if the user already exists
+        const user = await User.findOne({ email: email });
+        if(user) {
+            res.json({ success: false }); // Send failure response if user already exists
+        } else {
+            // Hash the password before saving the user
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Create a new user instance
+            const newUser = new User({ username, email, password: hashedPassword });
+            await newUser.save(); // Save the user to the database
+
+            res.json({ success: true, newUser }); // Send success response with new user data
+        }
+    } catch(err) {
+        console.log(err); // Log any errors during the process
+    }
+});
+
+// Get user information route
+app.get("/getUser", async(req, res) => {
+    const token = await req.cookies.token; // Retrieve the token from cookies
+    
+    if (!token) {
+        return res.json({ success: false, message: "Unauthorized" }); // Return unauthorized if no token is found
+    }
+
+    try {
+        // Verify the token to get user information
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        res.json({ success: true, user: decoded }); // Send success response with user data
+    } catch (err) {
+        return res.json({ success: false, message: "Invalid Token" }); // Return error if token is invalid
+    }
+});
+
+// Logout route
+app.post("/logout", async(req, res) => {
+    try {
+        res.clearCookie("token"); // Clear the token cookie on logout
+        res.json({ success: true }); // Send success response
+    } catch(err) {
+        console.log(err); // Log any errors during the process
+        res.json({ success: false }); // Send failure response if an error occurs
+    }
+});
+
+// Define the port to listen on
+const PORT = process.env.PORT || 5173;
+
+// Start the server and listen on the specified port
+app.listen(PORT, () => {
+    console.log(`Server is running on PORT ${PORT}`); // Log message indicating server is running
+});
+
